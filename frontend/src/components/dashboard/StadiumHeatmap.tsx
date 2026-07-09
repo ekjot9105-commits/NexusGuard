@@ -65,7 +65,8 @@ export default function StadiumHeatmap({ activeRoute, title = "Live Stadium Heat
 
   useEffect(() => {
     // Attempt Server-Sent Events (SSE) connection for extreme efficiency
-    const eventSource = new EventSource('http://localhost:8000/api/v1/dashboard/heatmap/stream');
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const eventSource = new EventSource(`${apiUrl}/api/v1/dashboard/heatmap/stream`);
     
     eventSource.onmessage = (event) => {
       try {
