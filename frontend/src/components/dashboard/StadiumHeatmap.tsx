@@ -1,0 +1,282 @@
+import { fetchHeatmapData } from '../../services/dashboard';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
+import SkeletonLoader from '../ui/SkeletonLoader';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, memo, useEffect } from 'react';
+
+interface StadiumHeatmapProps {
+  activeRoute?: { start: string; end: string } | null;
+  title?: string;
+  subtitle?: string;
+}
+
+const getRiskColor = (risk: string) => {
+  switch (risk) {
+    case 'critical': return '#ef4444'; // danger
+    case 'high': return '#f59e0b'; // warning
+    case 'medium': return '#22c55e'; // primary
+    default: return '#10b981'; // safe
+  }
+};
+
+const HeatmapNode = memo(({ id, x, y, risk, name, density, onHover, isHovered }: any) => {
+  const color = getRiskColor(risk);
+  
+  return (
+    <g 
+      onMouseEnter={() => onHover({ id, name, density, risk, x, y })} 
+      onMouseLeave={() => onHover(null)}
+      className="cursor-pointer outline-none"
+      tabIndex={0}
+      role="button"
+      aria-label={`Sector ${name}, ${density}% full, Risk level ${risk}`}
+    >
+      {/* Outer Pulse */}
+      {isHovered && (
+        <circle cx={x} cy={y} r="20" fill={color} fillOpacity="0.2" className="animate-ping" />
+      )}
+      
+      {/* Base Node */}
+      <circle cx={x} cy={y} r="10" fill={color} stroke="#fff" strokeWidth="2" className="transition-all duration-300 hover:scale-125" style={{ transformOrigin: `${x}px ${y}px` }} />
+      
+      {/* Label */}
+      <text x={x} y={y + 25} fill="#fff" fontSize="12" textAnchor="middle" fontWeight="bold" className="pointer-events-none drop-shadow-md">
+        {id}
+      </text>
+    </g>
+  );
+});
+
+export default function StadiumHeatmap({ activeRoute, title = "Live Stadium Heatmap", subtitle }: StadiumHeatmapProps) {
+  const [data, setData] = useState<any[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hoveredSector, setHoveredSector] = useState<any>(null);
+  const [showHeatmap, setShowHeatmap] = useState(true);
+
+  // Fallback function if SSE fails
+  const fetchMockData = async () => {
+    try {
+      const mockData = await fetchHeatmapData();
+      setData(mockData);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Attempt Server-Sent Events (SSE) connection for extreme efficiency
+    const eventSource = new EventSource('http://localhost:8000/api/v1/dashboard/heatmap/stream');
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const parsed = JSON.parse(event.data);
+        setData(parsed);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("SSE parse error", err);
+      }
+    };
+
+    eventSource.onerror = () => {
+      // If backend SSE is down (e.g., local dev without backend running), fallback to mock polling
+      console.warn("SSE connection failed, falling back to mock polling.");
+      eventSource.close();
+      fetchMockData();
+      // Setup mock polling interval
+      const interval = setInterval(fetchMockData, 5000);
+      // Hack to attach cleanup
+      (eventSource as any)._fallbackInterval = interval;
+    };
+
+    return () => {
+      eventSource.close();
+      if ((eventSource as any)._fallbackInterval) clearInterval((eventSource as any)._fallbackInterval);
+    };
+  }, []);
+
+  if (isLoading) {
+    return <SkeletonLoader className="h-96 w-full" />;
+  }
+
+  // Predefined SVG coordinates for sections (100x100 coordinate system mapped to viewBox)
+  const nodeCoords: Record<string, { x: number, y: number }> = {
+    'N1': { x: 400, y: 100 },
+    'N2': { x: 500, y: 150 },
+    'E1': { x: 700, y: 300 },
+    'S1': { x: 400, y: 500 },
+    'W1': { x: 100, y: 300 },
+  };
+
+  // Determine path coordinates based on active route
+  const getRoutePath = () => {
+    if (!activeRoute) return null;
+    
+    // Map dropdown strings to gate nodes
+    let startNode = { x: 100, y: 300 }; // default West
+    if (activeRoute.start.includes('North')) startNode = nodeCoords['N1'];
+    if (activeRoute.start.includes('East')) startNode = nodeCoords['E1'];
+    if (activeRoute.start.includes('South')) startNode = nodeCoords['S1'];
+
+    let endNode = { x: 400, y: 300 }; // Center pitch
+    if (activeRoute.end.includes('100')) endNode = nodeCoords['N2'];
+    if (activeRoute.end.includes('300')) endNode = nodeCoords['S1'];
+
+    // Create an arched SVG path
+    const dx = endNode.x - startNode.x;
+    const dy = endNode.y - startNode.y;
+    const cx = startNode.x + dx / 2 + 50; 
+    const cy = startNode.y + dy / 2 - 50;
+
+    return `M ${startNode.x} ${startNode.y} Q ${cx} ${cy} ${endNode.x} ${endNode.y}`;
+  };
+
+  return (
+    <Card className="col-span-1 lg:col-span-2 relative overflow-hidden h-full min-h-[500px] border border-primary/20 bg-surfaceHighlight/10">
+      <CardHeader className="flex flex-row items-start justify-between z-10 relative">
+        <div>
+          <CardTitle className="text-primary uppercase tracking-widest text-sm mb-1 font-bold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            {title}
+          </CardTitle>
+          {subtitle && <h2 className="text-xl font-bold text-white tracking-wide">{subtitle}</h2>}
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="showHeatmap" className="accent-primary" checked={showHeatmap} onChange={(e) => setShowHeatmap(e.target.checked)} />
+          <label htmlFor="showHeatmap" className="text-sm font-medium text-textSecondary cursor-pointer">Show Crowd Heatmap</label>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="h-[calc(100%-5rem)] relative p-0 flex items-center justify-center overflow-hidden">
+        
+        {/* Screen Reader Only Table */}
+        <div className="sr-only">
+          <table>
+            <caption>Live Stadium Sector Status</caption>
+            <thead>
+              <tr><th scope="col">Sector Name</th><th scope="col">Crowd Density</th><th scope="col">Risk Level</th></tr>
+            </thead>
+            <tbody>
+              {data?.map((sector: any) => (
+                <tr key={sector.id}><td>{sector.name} ({sector.id})</td><td>{sector.density}%</td><td>{sector.risk}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Dynamic SVG Map */}
+        <div className="w-full h-full max-h-[600px] aspect-video relative z-0">
+          <svg viewBox="0 0 800 600" className="w-full h-full drop-shadow-2xl">
+            {/* Concentric Stadium Rings */}
+            <g stroke="#ffffff" strokeOpacity="0.05" strokeWidth="2" fill="none">
+              <circle cx="400" cy="300" r="250" />
+              <circle cx="400" cy="300" r="200" />
+              <circle cx="400" cy="300" r="150" />
+              
+              {/* Football Pitch */}
+              <rect x="300" y="220" width="200" height="160" rx="4" strokeOpacity="0.15" stroke="#10b981" strokeWidth="2" fill="#10b981" fillOpacity="0.02" />
+              <line x1="400" y1="220" x2="400" y2="380" strokeOpacity="0.15" stroke="#10b981" strokeWidth="2" />
+              <circle cx="400" cy="300" r="25" strokeOpacity="0.15" stroke="#10b981" strokeWidth="2" />
+              {/* Penalty Areas */}
+              <rect x="300" y="260" width="30" height="80" strokeOpacity="0.15" stroke="#10b981" strokeWidth="1.5" />
+              <rect x="470" y="260" width="30" height="80" strokeOpacity="0.15" stroke="#10b981" strokeWidth="1.5" />
+              
+              {/* Radial Pathways */}
+              <line x1="400" y1="50" x2="400" y2="150" strokeOpacity="0.05" strokeDasharray="4 4" />
+              <line x1="400" y1="450" x2="400" y2="550" strokeOpacity="0.05" strokeDasharray="4 4" />
+              <line x1="150" y1="300" x2="250" y2="300" strokeOpacity="0.05" strokeDasharray="4 4" />
+              <line x1="550" y1="300" x2="650" y2="300" strokeOpacity="0.05" strokeDasharray="4 4" />
+            </g>
+
+            {/* Gate Labels */}
+            <g fill="#ffffff" fillOpacity="0.3" fontSize="10" fontWeight="bold" textAnchor="middle" letterSpacing="2">
+              <text x="400" y="40">NORTH GATE</text>
+              <text x="400" y="570">SOUTH GATE</text>
+              <text x="760" y="305">EAST GATE</text>
+              <text x="40" y="305">WEST GATE</text>
+            </g>
+
+            {/* Active Wayfinding Route */}
+            <AnimatePresence>
+              {activeRoute && (
+                <motion.g
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <path 
+                    d={getRoutePath()!} 
+                    fill="none" 
+                    stroke="#0ea5e9" 
+                    strokeWidth="6" 
+                    strokeLinecap="round"
+                    strokeDasharray="10, 10"
+                    className="animate-[dash_2s_linear_infinite]"
+                  />
+                  <path 
+                    d={getRoutePath()!} 
+                    fill="none" 
+                    stroke="#38bdf8" 
+                    strokeWidth="12" 
+                    strokeOpacity="0.3"
+                    strokeLinecap="round"
+                  />
+                </motion.g>
+              )}
+            </AnimatePresence>
+
+            {/* Data Nodes */}
+            {showHeatmap && data?.map((sector: any) => {
+              const coords = nodeCoords[sector.id] || { x: 400, y: 300 };
+              return (
+                <HeatmapNode 
+                  key={sector.id}
+                  {...sector}
+                  x={coords.x}
+                  y={coords.y}
+                  onHover={setHoveredSector}
+                  isHovered={hoveredSector?.id === sector.id}
+                />
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Heatmap Legend */}
+        <div className="absolute bottom-6 right-6 glass-panel bg-surface/80 p-4 rounded-xl border border-white/10 shadow-lg text-xs z-10 backdrop-blur-md">
+          <div className="font-bold uppercase tracking-wider text-textSecondary mb-3">Heatmap Key</div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#10b981]" /> Smooth Flow / Safe</div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#f59e0b]" /> Moderate / Cleaning</div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ef4444]" /> Congested / Active Incident</div>
+          </div>
+        </div>
+
+        {/* Hover Details Panel */}
+        <AnimatePresence>
+          {hoveredSector && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute glass-panel p-4 rounded-xl flex gap-6 items-center shadow-2xl z-20 pointer-events-none"
+              style={{ left: `50%`, top: `20px`, transform: `translateX(-50%)` }}
+            >
+              <div>
+                <div className="text-xs text-textSecondary uppercase tracking-wider">{hoveredSector.name}</div>
+                <div className="font-bold text-lg text-white">{hoveredSector.id}</div>
+              </div>
+              <div className="border-l border-white/10 pl-4">
+                <div className="text-xs text-textSecondary uppercase">Density</div>
+                <div className="font-bold text-white">{hoveredSector.density}%</div>
+              </div>
+              <div className="border-l border-white/10 pl-4">
+                <div className="text-xs text-textSecondary uppercase">Risk Level</div>
+                <div className="font-bold capitalize" style={{ color: getRiskColor(hoveredSector.risk) }}>{hoveredSector.risk}</div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </CardContent>
+    </Card>
+  );
+}
