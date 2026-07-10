@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
-import { MessageCircle, Globe, Sparkles, Send } from 'lucide-react';
+import { MessageCircle, Globe, Send, User, Bot, Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const languages = [
@@ -14,7 +14,7 @@ const languages = [
 const presets = [
   { id: 'restroom', en: 'Where is the nearest restroom?', hi: 'शौचालय कहाँ है?', te: 'దగ్గరలో ఉన్న రెస్ట్‌రూమ్ ఎక్కడ ఉంది?', ta: 'அருகிலுள்ள கழிப்பறை எங்கே?', bn: 'কাছের শৌচাগার কোথায়?' },
   { id: 'gate', en: 'How do I reach Gate C?', hi: 'मैं गेट सी तक कैसे पहुँचूँ?', te: 'నేను గేట్ C కి ఎలా చేరుకోవాలి?', ta: 'நான் எப்படி கேட் சி-ஐ அடைவது?', bn: 'আমি কীভাবে গেট সিতে পৌঁছাব?' },
-  { id: 'food', en: 'Show me the shortest food court wait time.', hi: 'सबसे कम प्रतीक्षा समय वाला फ़ूड कोर्ट दिखाएं।', te: 'తక్కువ నిరీక్షణ సమయం ఉన్న ఫుడ్ కోర్ట్ చూపించు.', ta: 'குறைந்த காத்திருப்பு நேரம் கொண்ட உணவு விடுதியைக் காட்டு.', bn: 'সবচেয়ে কম অপেক্ষার সময় সহ ফুড কোর্ট দেখান।' }
+  { id: 'food', en: 'Shortest food court wait time?', hi: 'सबसे कम प्रतीक्षा समय वाला फ़ूड कोर्ट दिखाएं।', te: 'తక్కువ నిరీక్షణ సమయం ఉన్న ఫుడ్ కోర్ట్ చూపించు.', ta: 'குறைந்த காத்திருப்பு நேரம் கொண்ட உணவு விடுதியைக் காட்டு.', bn: 'সবচেয়ে কম অপেক্ষার সময় সহ ফুড কোর্ট দেখান।' }
 ];
 
 const simulatedResponses: Record<string, Record<string, string>> = {
@@ -74,25 +74,65 @@ const customSimulatedAnswers: Record<string, string[]> = {
   ]
 };
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export default function BilingualConcierge() {
   const [lang, setLang] = useState('en');
-  const [activeQuery, setActiveQuery] = useState<string | null>(null);
-  const [response, setResponse] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'assistant', content: 'Hello! I am your Bilingual Fan Concierge. How can I help you today?' }
+  ]);
   const [isTyping, setIsTyping] = useState(false);
   const [customInput, setCustomInput] = useState('');
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
   
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-  const handlePresetClick = (id: string) => {
-    setActiveQuery(id);
-    setResponse(null);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  useEffect(() => {
+    // Update welcome message if language changes and chat is empty or just started
+    if (messages.length <= 1) {
+      const welcomeMap: Record<string, string> = {
+        en: 'Hello! I am your Bilingual Fan Concierge. How can I help you today?',
+        hi: 'नमस्ते! मैं आपका द्विभाषी प्रशंसक सहायक हूँ। मैं आज आपकी कैसे मदद कर सकता हूँ?',
+        te: 'హలో! నేను మీ ద్విభాషా అభిమాని సహాయకుడిని. ఈ రోజు నేను మీకు ఎలా సహాయం చేయగలను?',
+        ta: 'வணக்கம்! நான் உங்கள் இருமொழி ரசிகர் உதவியாளர். இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?',
+        bn: 'হ্যালো! আমি আপনার দ্বিভাষিক ফ্যান কনসিয়েজ। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?'
+      };
+      setMessages([{ role: 'assistant', content: welcomeMap[lang] || welcomeMap['en'] }]);
+    }
+  }, [lang]);
+
+  const speakText = (text: string, langCode: string) => {
+    if (!isVoiceEnabled || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const localeMap: Record<string, string> = {
+      en: 'en-US', hi: 'hi-IN', te: 'te-IN', ta: 'ta-IN', bn: 'bn-IN'
+    };
+    utterance.lang = localeMap[langCode] || 'en-US';
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePresetClick = (preset: any) => {
+    const userQuery = preset[lang] || preset['en'];
+    setMessages(prev => [...prev, { role: 'user', content: userQuery }]);
     setIsTyping(true);
     
-    // Simulate AI thinking
     setTimeout(() => {
       setIsTyping(false);
-      const resText = simulatedResponses[id][lang] || simulatedResponses[id]['en'];
-      setResponse(resText);
+      const resText = simulatedResponses[preset.id][lang] || simulatedResponses[preset.id]['en'];
+      setMessages(prev => [...prev, { role: 'assistant', content: resText }]);
+      speakText(resText, lang);
     }, 1200);
   };
 
@@ -100,16 +140,17 @@ export default function BilingualConcierge() {
     e.preventDefault();
     if (!customInput.trim()) return;
     
-    setActiveQuery('custom');
-    setResponse(null);
+    const userQuery = customInput.trim();
+    setMessages(prev => [...prev, { role: 'user', content: userQuery }]);
+    setCustomInput('');
     setIsTyping(true);
     
     setTimeout(() => {
       setIsTyping(false);
       const possibleAnswers = customSimulatedAnswers[lang] || customSimulatedAnswers['en'];
       const randomAnswer = possibleAnswers[Math.floor(Math.random() * possibleAnswers.length)];
-      setResponse(randomAnswer);
-      setCustomInput('');
+      setMessages(prev => [...prev, { role: 'assistant', content: randomAnswer }]);
+      speakText(randomAnswer, lang);
     }, 1500);
   };
 
@@ -118,84 +159,96 @@ export default function BilingualConcierge() {
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2 text-primary">
           <Globe className="w-5 h-5" />
-          <CardTitle className="text-sm font-bold uppercase tracking-wider">Bilingual Fan Concierge</CardTitle>
+          <CardTitle className="text-sm font-bold uppercase tracking-wider">Fan Copilot</CardTitle>
         </div>
-        <select 
-          className="bg-surface/50 border border-borderWhite/20 rounded-md text-sm p-1 outline-none focus:ring-1 focus:ring-primary"
-          value={lang}
-          onChange={(e) => setLang(e.target.value)}
-          aria-label="Select Language"
-        >
-          {languages.map(l => (
-            <option key={l.code} value={l.code}>{l.name}</option>
-          ))}
-        </select>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+            className={`p-1.5 rounded-full transition-colors ${isVoiceEnabled ? 'bg-primary/20 text-primary' : 'bg-surface text-textSecondary hover:text-textPrimary'}`}
+            title={isVoiceEnabled ? "Voice Output On" : "Voice Output Off"}
+          >
+            {isVoiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+          <select 
+            className="bg-surface/50 border border-borderWhite/20 rounded-md text-xs p-1 outline-none focus:ring-1 focus:ring-primary"
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            aria-label="Select Language"
+          >
+            {languages.map(l => (
+              <option key={l.code} value={l.code}>{l.name}</option>
+            ))}
+          </select>
+        </div>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col gap-4">
-        <div className="text-xs text-textSecondary uppercase tracking-wide">
-          Bilingual Chat Assistant Simulator
-        </div>
+      <CardContent className="flex-1 flex flex-col gap-0 overflow-hidden">
         
-        <div className="flex-1 flex flex-col gap-3">
+        {/* Chat Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" aria-live="polite">
+          <AnimatePresence>
+            {messages.map((msg, i) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                key={i} 
+                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-primary/20 text-primary' : 'bg-info/20 text-info'}`}>
+                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                </div>
+                <div className={`p-3 rounded-lg text-sm leading-relaxed max-w-[85%] ${msg.role === 'user' ? 'bg-primary/10 text-textPrimary border border-primary/20 rounded-tr-none' : 'bg-surfaceHighlight/50 text-textPrimary border border-borderWhite/10 rounded-tl-none shadow-sm'}`}>
+                  {msg.content}
+                </div>
+              </motion.div>
+            ))}
+            {isTyping && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-info/20 text-info flex items-center justify-center shrink-0">
+                  <Bot size={14} />
+                </div>
+                <div className="p-3 rounded-lg bg-surfaceHighlight/50 text-textSecondary text-sm border border-borderWhite/10 rounded-tl-none flex items-center gap-2">
+                  <Loader2 size={14} className="animate-spin" /> Thinking & Translating...
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Suggested Queries */}
+        <div className="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar">
           {presets.map((preset) => (
             <button
               key={preset.id}
-              onClick={() => handlePresetClick(preset.id)}
-              className={`text-left p-3 rounded-lg border transition-all flex items-center justify-between group ${activeQuery === preset.id ? 'bg-primary/20 border-primary shadow-[0_0_10px_rgba(34,197,94,0.2)]' : 'bg-surface/30 border-borderWhite/20 hover:border-primary/50'}`}
-              aria-label={`Ask: ${preset.en}`}
+              onClick={() => handlePresetClick(preset)}
+              className="whitespace-nowrap px-3 py-1.5 text-xs bg-surface border border-borderWhite/20 hover:border-primary/50 text-textSecondary hover:text-primary rounded-full transition-colors flex items-center gap-1.5"
             >
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{preset.en}</span>
-                {lang !== 'en' && <span className="text-xs text-textSecondary mt-1">{(preset as any)[lang]}</span>}
-              </div>
-              <MessageCircle className={`w-4 h-4 transition-colors ${activeQuery === preset.id ? 'text-primary' : 'text-textSecondary group-hover:text-primary'}`} />
+              <MessageCircle size={12} /> {(preset as any)[lang] || preset.en}
             </button>
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          {(isTyping || response) && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="p-4 bg-surfaceHighlight/30 rounded-xl border border-borderWhite/20 relative"
+        {/* Input Area */}
+        <form onSubmit={handleCustomSubmit} className="p-3 border-t border-borderWhite/20 bg-surface/30">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Ask anything..."
+              value={customInput}
+              onChange={(e) => setCustomInput(e.target.value)}
+              className="w-full bg-surface border border-borderWhite/20 rounded-lg py-2.5 px-4 pr-12 text-sm focus:ring-2 focus:ring-primary outline-none transition-shadow"
+              aria-label="Custom Copilot Query"
+            />
+            <button 
+              type="submit"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:bg-primary/10 rounded-md transition-colors disabled:opacity-50"
+              disabled={!customInput.trim() || isTyping}
+              aria-label="Send Query"
             >
-              <Sparkles className="w-4 h-4 text-info absolute top-3 left-3" />
-              <div className="pl-6 text-sm text-textPrimary leading-relaxed min-h-[40px]" aria-live="polite" aria-atomic="true">
-                {isTyping ? (
-                  <span className="flex items-center h-full text-textSecondary italic">
-                    AI Concierge is thinking and translating...
-                  </span>
-                ) : (
-                  <span>
-                    <span className="font-bold text-info">Recommender suggestion: </span>
-                    {response}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <form onSubmit={handleCustomSubmit} className="mt-auto pt-4 border-t border-borderWhite/20 relative">
-          <input
-            type="text"
-            placeholder="Ask Fan Copilot..."
-            value={customInput}
-            onChange={(e) => setCustomInput(e.target.value)}
-            className="w-full bg-surface/50 border border-borderWhite/20 rounded-lg py-3 px-4 pr-12 text-sm focus:ring-2 focus:ring-primary outline-none"
-            aria-label="Custom Copilot Query"
-          />
-          <button 
-            type="submit"
-            className="absolute right-2 top-[26px] p-2 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors disabled:opacity-50"
-            disabled={!customInput.trim() || isTyping}
-            aria-label="Send Query"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </form>
       </CardContent>
     </Card>
