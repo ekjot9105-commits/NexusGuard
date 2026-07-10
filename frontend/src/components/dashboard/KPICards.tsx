@@ -7,9 +7,10 @@ import { motion } from 'framer-motion';
 import { useCountUp } from '../../hooks/useCountUp';
 
 function AnimatedNumber({ value, format }: { value: any, format: (v: any) => string }) {
-  // Only animate if value is a number
+  const numericValue = typeof value === 'number' ? value : 0;
+  const count = useCountUp(numericValue, 1500);
+
   if (typeof value === 'number') {
-    const count = useCountUp(value, 1500);
     return <>{format(count)}</>;
   }
   return <>{format(value)}</>;

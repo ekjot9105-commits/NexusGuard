@@ -13,9 +13,7 @@ interface UIState {
 }
 
 const getSystemTheme = () => {
-  if (typeof window !== 'undefined') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
+  // Always default to dark mode on first load for this platform.
   return true;
 };
 
