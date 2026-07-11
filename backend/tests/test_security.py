@@ -19,21 +19,45 @@ async def test_pii_route(request: Request):
 client = TestClient(app)
 
 
-def test_pii_sanitizer_removes_names():
+def test_pii_sanitizer_removes_identifiers():
     payload = {
-        "user": "John Doe",
-        "message": "Hello from Alice and Bob",
+        "user": "David Beckham",
+        "message": "My email is test@example.com and phone is +1-800-555-0199",
+        "ticket": "Issue with TKT-12345",
+        "uuid_ref": "Event 123e4567-e89b-12d3-a456-426614174000",
+        "player": "Look at PLY-9988",
+        "passport": "ID US1234567",
+        "name": "Lionel Messi"
     }
 
     # Send request
     response = client.post("/test-pii", json=payload)
     data = response.json()
 
-    # The middleware should redact hardcoded names
-    assert "John Doe" not in str(data)
-    assert "Alice" not in str(data)
-    assert "Bob" not in str(data)
-    assert "[REDACTED]" in str(data)
+    # The middleware should redact key-based names
+    assert "David Beckham" not in str(data)
+    assert "Lionel Messi" not in str(data)
+    assert data["user"] == "[REDACTED]"
+    assert data["name"] == "[REDACTED]"
+    
+    # The middleware should redact regex identifiers in text
+    assert "test@example.com" not in str(data)
+    assert "[EMAIL_REDACTED]" in str(data)
+    
+    assert "+1-800-555-0199" not in str(data)
+    assert "[PHONE_REDACTED]" in str(data)
+    
+    assert "TKT-12345" not in str(data)
+    assert "[TICKET_REDACTED]" in str(data)
+    
+    assert "123e4567-e89b-12d3-a456-426614174000" not in str(data)
+    assert "[UUID_REDACTED]" in str(data)
+    
+    assert "PLY-9988" not in str(data)
+    assert "[PLAYER_REDACTED]" in str(data)
+    
+    assert "US1234567" not in str(data)
+    assert "[PASSPORT_REDACTED]" in str(data)
 
 
 def test_mock_auth_jwt_validation():

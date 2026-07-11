@@ -22,15 +22,15 @@ class PIISanitizer:
     """
 
     # Regex patterns for various PII types
-    EMAIL_PATTERN = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
-    PHONE_PATTERN = re.compile(
-        r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"
-    )
+    EMAIL_PATTERN = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b")
+    PHONE_PATTERN = re.compile(r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b")
     TICKET_ID_PATTERN = re.compile(r"\bTKT-\d{4,8}\b", flags=re.IGNORECASE)
+    UUID_PATTERN = re.compile(r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b")
+    PLAYER_ID_PATTERN = re.compile(r"\bPLY-\d{4,8}\b", flags=re.IGNORECASE)
+    PASSPORT_PATTERN = re.compile(r"\b[A-Z0-9]{2}\d{7}\b", flags=re.IGNORECASE)
 
-    # Basic mock name matching. In production, NER models like spaCy or AWS Comprehend would be used.
-    # For this mock, we redact specific common placeholder names and any explicit name matches.
-    MOCK_NAMES = ["John Doe", "Jane Smith", "Alice", "Bob", "Charlie", "Ekjot"]
+    # Configurable keys for JSON traversal masking without heavy NLP
+    SENSITIVE_KEYS = {"user", "name", "first_name", "last_name", "author", "operator", "customer"}
 
     @classmethod
     def sanitize_text(cls, text: str) -> str:
@@ -41,9 +41,9 @@ class PIISanitizer:
         text = cls.EMAIL_PATTERN.sub("[EMAIL_REDACTED]", text)
         text = cls.PHONE_PATTERN.sub("[PHONE_REDACTED]", text)
         text = cls.TICKET_ID_PATTERN.sub("[TICKET_REDACTED]", text)
-
-        for name in cls.MOCK_NAMES:
-            text = re.sub(rf"\b{name}\b", "[NAME_REDACTED]", text, flags=re.IGNORECASE)
+        text = cls.UUID_PATTERN.sub("[UUID_REDACTED]", text)
+        text = cls.PLAYER_ID_PATTERN.sub("[PLAYER_REDACTED]", text)
+        text = cls.PASSPORT_PATTERN.sub("[PASSPORT_REDACTED]", text)
 
         return text
 
@@ -51,11 +51,17 @@ class PIISanitizer:
     def sanitize_dict(
         cls, data: Union[Dict[str, Any], list, str]
     ) -> Union[Dict[str, Any], list, str]:
-        """Recursively sanitizes a dictionary, list, or string."""
+        """Recursively sanitizes a dictionary, list, or string with key-based masking."""
         if isinstance(data, str):
             return cls.sanitize_text(data)
         elif isinstance(data, dict):
-            return {k: cls.sanitize_dict(v) for k, v in data.items()}
+            sanitized = {}
+            for k, v in data.items():
+                if k.lower() in cls.SENSITIVE_KEYS and isinstance(v, str):
+                    sanitized[k] = "[REDACTED]"
+                else:
+                    sanitized[k] = cls.sanitize_dict(v)
+            return sanitized
         elif isinstance(data, list):
             return [cls.sanitize_dict(item) for item in data]
         return data
