@@ -72,11 +72,13 @@ class VolunteerTask(BaseModel):
 
 
 class MultilingualAnnouncement(BaseModel):
-    """Public address announcements generated in multiple languages."""
+    """Public address announcements generated in multiple languages for FIFA World Cup fans."""
 
     english: str = Field(..., description="Announcement text in English")
     spanish: str = Field(..., description="Announcement text in Spanish")
     french: str = Field(..., description="Announcement text in French")
+    arabic: str = Field(..., description="Announcement text in Arabic")
+    portuguese: str = Field(..., description="Announcement text in Portuguese")
 
 
 class CopilotRecommendation(BaseModel):
@@ -113,6 +115,15 @@ class CopilotRecommendation(BaseModel):
     )
     volunteer_tasks: List[VolunteerTask] = Field(
         ..., description="Specific tasks for volunteers"
+    )
+    transit_recommendations: List[str] = Field(
+        default_factory=list, description="Transportation routing and crowd diversion steps"
+    )
+    accessibility_support: List[str] = Field(
+        default_factory=list, description="Support actions specifically for fans requiring accessible routes or assistance"
+    )
+    sustainability_impact: str = Field(
+        ..., description="How this plan affects stadium energy use, waste management, or footprint"
     )
     multilingual_announcement: MultilingualAnnouncement = Field(
         ..., description="Generated PA announcements"

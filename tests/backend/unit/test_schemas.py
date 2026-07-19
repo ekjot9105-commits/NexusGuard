@@ -46,14 +46,23 @@ def test_copilot_recommendation_valid():
         risk_level=RiskLevel.HIGH,
         confidence=0.92,
         reasoning="Sensors indicate overcrowding",
+        reasoning_chain=["Step 1", "Step 2"],
         evidence=["Density 90% at Gate 4"],
         root_cause="Train arrival spike",
+        situation_summary="Crowd spike",
+        estimated_crowd_reduction=20,
         recommended_actions=[action],
+        alternative_actions=[],
         volunteer_tasks=[],
+        transit_recommendations=["Delay metro"],
+        accessibility_support=["Wheelchairs"],
+        sustainability_impact="Reduced HVAC",
         multilingual_announcement={
             "english": "Please use Gate 5.",
             "spanish": "Por favor, use la Puerta 5.",
-            "french": "Veuillez utiliser la porte 5."
+            "french": "Veuillez utiliser la porte 5.",
+            "arabic": "يرجى استخدام البوابة 5.",
+            "portuguese": "Por favor, use o Portão 5."
         },
         incident_summary="Overcrowding at Gate 4 due to train arrivals."
     )
@@ -69,11 +78,15 @@ def test_copilot_recommendation_invalid_risk_score():
             risk_level=RiskLevel.HIGH,
             confidence=0.9,
             reasoning="Test",
+            reasoning_chain=[],
             evidence=["Test"],
             root_cause="Test",
+            situation_summary="",
+            estimated_crowd_reduction=0,
             recommended_actions=[],
             volunteer_tasks=[],
-            multilingual_announcement={"english": "e", "spanish": "s", "french": "f"},
+            sustainability_impact="",
+            multilingual_announcement={"english": "e", "spanish": "s", "french": "f", "arabic": "a", "portuguese": "p"},
             incident_summary="Summary"
         )
 
@@ -86,11 +99,15 @@ def test_copilot_recommendation_invalid_confidence():
             risk_level=RiskLevel.HIGH,
             confidence=1.5,  # Invalid: max is 1.0
             reasoning="Test",
+            reasoning_chain=[],
             evidence=["Test"],
             root_cause="Test",
+            situation_summary="",
+            estimated_crowd_reduction=0,
             recommended_actions=[],
             volunteer_tasks=[],
-            multilingual_announcement={"english": "e", "spanish": "s", "french": "f"},
+            sustainability_impact="",
+            multilingual_announcement={"english": "e", "spanish": "s", "french": "f", "arabic": "a", "portuguese": "p"},
             incident_summary="Summary"
         )
 

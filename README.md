@@ -16,11 +16,11 @@
 
 NexusGuard is a proactive **AI Stadium Operations Copilot** designed for the **Google Prompt Wars Virtual Challenge** (Focusing on the FIFA World Cup 2026). 
 
-**The Problem:** Managing a 80,000+ seat stadium involves analyzing thousands of data points—crowd density, medical emergencies, staff positioning, and fan queries. Traditional dashboards are reactive, forcing operators to manually parse data to find issues.
+**The Problem:** Managing a massive FIFA World Cup 2026 stadium involves analyzing complex, multi-modal data points—crowd density, accessible routing, mass transit arrivals, sustainability metrics, and multilingual fan queries. Traditional dashboards are reactive, forcing organizers and venue staff to manually parse data to find issues.
 
-**The Solution:** NexusGuard flips the paradigm. Instead of humans monitoring dashboards, **AI monitors the stadium**. It predicts bottlenecks before they occur, explains its reasoning, automatically dispatches volunteers, and seamlessly assists global fans in multiple languages.
+**The Solution:** NexusGuard flips the paradigm. Instead of humans monitoring dashboards, **AI monitors the stadium operations**. It predicts bottlenecks before they occur, explains its reasoning, automatically dispatches volunteers, routes transportation efficiently, and seamlessly assists global fans in multiple languages (including Arabic and Portuguese).
 
-**Why Generative AI?** Traditional algorithms can trigger a simple threshold alert, but Generative AI contextualizes complex, overlapping situations (e.g., "A medical alert near Gate 4 during halftime rush"), formulates mitigation plans, translates alerts instantly, and provides natural-language summaries for operators.
+**Why Generative AI?** Traditional algorithms can trigger a simple threshold alert, but Generative AI contextualizes complex, overlapping situations (e.g., "A medical alert near Gate 4 during halftime rush with a metro arriving in 5 mins"), formulates mitigation plans, translates PA announcements instantly, and balances operations with sustainability goals (like lowering HVAC usage during diversions).
 
 ---
 
@@ -28,12 +28,14 @@ NexusGuard is a proactive **AI Stadium Operations Copilot** designed for the **G
 
 | Feature | Description |
 |---|---|
-| 🧠 **AI Operations Copilot** | Proactively analyzes stadium metrics and predicts crowd risks. |
+| 🧠 **AI Operations Copilot** | Proactively analyzes stadium metrics and predicts crowd risks for FIFA 2026 matches. |
 | 🗺️ **Crowd Intelligence** | Real-time SVG-based visualization of stadium density and flow. |
 | 🛡️ **Incident Management** | Automated logging, AI reasoning, and mitigation recommendations. |
 | 🏃 **Volunteer Dispatch** | Smart task delegation with geolocation routing for staff. |
-| 🌍 **Fan Assistance** | Multilingual AI concierge assisting fans instantly in their native languages. |
-| ♿ **Accessibility** | Full Light/Dark theme support, reduced motion, WCAG compliance. |
+| 🌍 **Multilingual Fan Assistance** | AI concierge assisting fans instantly in English, Spanish, French, Arabic, and Portuguese. |
+| ♿ **Accessibility Support** | Dedicated routing and support actions for disabled patrons, plus WCAG UI compliance. |
+| 🚆 **Transit Integration** | Recommends transport diversions and schedules to manage arriving/departing crowds safely. |
+| 🌱 **Sustainability Tracking** | Predicts energy and waste impact of operational decisions (e.g. HVAC optimization). |
 | 🔒 **Privacy Protection** | Middleware sanitization ensuring zero PII reaches the LLM. |
 | ⚡ **Semantic AI Cache** | Bypasses LLM generation for similar queries to ensure sub-second speed. |
 | 💻 **Responsive Dashboard**| Enterprise-grade UI optimized for all devices and operations centers. |

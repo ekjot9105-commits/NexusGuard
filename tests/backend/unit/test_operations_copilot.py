@@ -42,6 +42,11 @@ async def test_analyze_incident_success():
     assert isinstance(recommendation, CopilotRecommendation)
     assert recommendation.risk_score == 85
     assert len(recommendation.recommended_actions) > 0
+    assert "delay the next metro" in recommendation.transit_recommendations[0].lower()
+    assert "wheelchair" in recommendation.accessibility_support[0].lower()
+    assert "hvac" in recommendation.sustainability_impact.lower()
+    assert hasattr(recommendation.multilingual_announcement, "arabic")
+    assert hasattr(recommendation.multilingual_announcement, "portuguese")
 
 def test_build_context_prompt():
     """Test that the prompt string is constructed correctly."""
@@ -65,3 +70,22 @@ def test_build_context_prompt():
     assert "Zone A" in prompt
     assert "35.5" in prompt
     assert "No recent manual reports available." in prompt
+    assert "FIFA World Cup 2026" in prompt
+    assert "sustainability" in prompt
+
+@pytest.mark.asyncio
+async def test_analyze_incident_missing_data():
+    """Test how the copilot handles missing telemetry or reports gracefully."""
+    ai_service = MockGeminiService()
+    agent = OperationsCopilotAgent(ai_service=ai_service)
+    
+    # Act with empty data
+    recommendation = await agent.analyze_incident(
+        incident_id="INC-EMPTY-001",
+        telemetry_data=[],
+        recent_reports=[]
+    )
+    
+    # Assert it still generated a structured response safely
+    assert isinstance(recommendation, CopilotRecommendation)
+    assert recommendation.risk_level in ["low", "medium", "high", "critical"]

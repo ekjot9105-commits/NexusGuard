@@ -46,10 +46,19 @@ DEFAULT_COPILOT_RECOMMENDATION = {
             "instructions": "Form a line and direct fans towards Gate 5. Use megaphones.",
         }
     ],
+    "transit_recommendations": [
+        "Coordinate with city transit to delay the next metro arrival by 3 minutes."
+    ],
+    "accessibility_support": [
+        "Deploy 2 wheelchairs to Gate 4 immediately to assist disabled fans caught in the surge."
+    ],
+    "sustainability_impact": "Rerouting prevents bottlenecking which lowers localized HVAC burden in the concourse, saving an estimated 10kWh.",
     "multilingual_announcement": {
         "english": "Attention fans: Gate 4 is currently experiencing high volume. Please proceed to Gate 5 for faster entry.",
         "spanish": "Atención aficionados: La Puerta 4 tiene un alto volumen. Por favor, diríjase a la Puerta 5 para una entrada más rápida.",
         "french": "Attention les fans : La porte 4 connaît actuellement une forte affluence. Veuillez vous diriger vers la porte 5.",
+        "arabic": "انتباه المشجعين: البوابة 4 تشهد حاليا حجما كبيرا. يرجى التوجه إلى البوابة 5 للدخول بشكل أسرع.",
+        "portuguese": "Atenção torcedores: O Portão 4 está enfrentando alto volume. Dirija-se ao Portão 5 para uma entrada mais rápida.",
     },
     "incident_summary": "Gate 4 overcrowding due to metro surge. Rerouting to Gate 5 initiated.",
 }
