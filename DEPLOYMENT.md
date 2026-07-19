@@ -24,23 +24,26 @@ VITE_API_URL=https://your-backend-domain.onrender.com/api/v1
 
 *(Note: Never expose actual API keys or secrets in version control.)*
 
-## Frontend Deployment (Netlify)
+## Frontend Deployment (Vercel)
 
-1. Connect your GitHub repository to [Netlify](https://www.netlify.com/).
-2. Configure the Build settings:
-   - **Build command**: `npm run build`
-   - **Publish directory**: `dist`
-3. Add the required Environment Variables in the Netlify dashboard (`VITE_API_URL`).
-4. Trigger a deploy. Netlify will handle building and serving the static assets.
+1. Create a free account on [Vercel](https://vercel.com/).
+2. Click **Add New...** > **Project** and import your GitHub repository.
+3. Vercel will automatically detect that it's a Vite (React) project.
+4. **Configuration**:
+   - **Framework Preset**: Vite
+   - **Root Directory**: `frontend`
+5. **Environment Variables**: Add `VITE_API_URL` pointing to your Render backend (e.g., `https://your-backend.onrender.com/api/v1`).
+6. Click **Deploy**. Vercel will build and host your frontend instantly.
 
 ## Backend Deployment (Render)
 
 1. Create a new Web Service on [Render](https://render.com/).
 2. Connect your GitHub repository.
 3. Configure the settings:
+   - **Root Directory**: *(Leave this BLANK / Empty)*
    - **Environment**: Python
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Build Command**: `pip install -r backend/requirements.txt`
+   - **Start Command**: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 4. Set the Environment Variables (`GEMINI_API_KEY`, `SECRET_KEY`, `CORS_ORIGINS`).
 5. Deploy. Render will expose the backend URL to link with your frontend.
 
