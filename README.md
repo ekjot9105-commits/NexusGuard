@@ -1,4 +1,4 @@
-# AegisFlow – AI Stadium Operations Copilot
+# NexusGuard – AI Stadium Operations Copilot
 
 *The ultimate intelligent operations platform for the FIFA World Cup 2026, powered by Generative AI.*
 
@@ -14,11 +14,11 @@
 
 ## 🏆 Project Description
 
-AegisFlow is a proactive **AI Stadium Operations Copilot** designed for the **Google Prompt Wars Virtual Challenge** (Focusing on the FIFA World Cup 2026). 
+NexusGuard is a proactive **AI Stadium Operations Copilot** designed for the **Google Prompt Wars Virtual Challenge** (Focusing on the FIFA World Cup 2026). 
 
 **The Problem:** Managing a 80,000+ seat stadium involves analyzing thousands of data points—crowd density, medical emergencies, staff positioning, and fan queries. Traditional dashboards are reactive, forcing operators to manually parse data to find issues.
 
-**The Solution:** AegisFlow flips the paradigm. Instead of humans monitoring dashboards, **AI monitors the stadium**. It predicts bottlenecks before they occur, explains its reasoning, automatically dispatches volunteers, and seamlessly assists global fans in multiple languages.
+**The Solution:** NexusGuard flips the paradigm. Instead of humans monitoring dashboards, **AI monitors the stadium**. It predicts bottlenecks before they occur, explains its reasoning, automatically dispatches volunteers, and seamlessly assists global fans in multiple languages.
 
 **Why Generative AI?** Traditional algorithms can trigger a simple threshold alert, but Generative AI contextualizes complex, overlapping situations (e.g., "A medical alert near Gate 4 during halftime rush"), formulates mitigation plans, translates alerts instantly, and provides natural-language summaries for operators.
 
@@ -42,7 +42,7 @@ AegisFlow is a proactive **AI Stadium Operations Copilot** designed for the **Go
 
 ## 🏗️ Architecture & Data Flow
 
-AegisFlow relies on a highly decoupled architecture separating visual rendering from AI logic.
+NexusGuard relies on a highly decoupled architecture separating visual rendering from AI logic.
 
 ```mermaid
 graph LR
@@ -70,7 +70,7 @@ graph LR
 ## 📁 Folder Structure
 
 ```
-AegisFlow/
+NexusGuard/
 ├── backend/
 │   ├── ai/               # Gemini AI Prompts & Agents
 │   ├── api/              # FastAPI Routers & Middleware
@@ -113,8 +113,8 @@ AegisFlow/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/ekjot9105-commits/AegisFlow.git
-cd AegisFlow
+git clone https://github.com/ekjot9105-commits/NexusGuard.git
+cd NexusGuard
 ```
 
 ### 2. Install Frontend
@@ -211,7 +211,7 @@ Detailed in [SECURITY.md](SECURITY.md).
 
 ## ♿ Accessibility
 
-AegisFlow adheres to **WCAG 2.2 AA** standards:
+NexusGuard adheres to **WCAG 2.2 AA** standards:
 - High contrast Light and Dark semantic themes.
 - Reduced Motion toggle for users with vestibular disorders.
 - Aria-labels for all interactive graphs and maps.

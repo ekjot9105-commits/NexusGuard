@@ -30,7 +30,7 @@ export const useUIStore = create<UIState>()(
       setLanguage: (val) => set({ language: val }),
     }),
     {
-      name: 'aegisflow-ui-storage',
+      name: 'nexusguard-ui-storage',
       partialize: (state) => ({ isDarkMode: state.isDarkMode, reducedMotion: state.reducedMotion, language: state.language }),
     }
   )

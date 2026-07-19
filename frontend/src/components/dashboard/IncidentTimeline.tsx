@@ -95,7 +95,7 @@ export default function IncidentTimeline() {
                           <span className="text-primary">{event.type.toUpperCase()}</span>
                         </div>
                         <p className="leading-relaxed">
-                          This event was automatically classified and logged by AegisFlow Copilot. 
+                          This event was automatically classified and logged by NexusGuard Copilot. 
                           {event.type === 'prediction' && " Preventative measures were immediately recommended."}
                           {event.type === 'approved' && " The operator successfully validated the execution strategy."}
                         </p>

@@ -2,7 +2,6 @@
 Unit tests for the PII Sanitizer Middleware.
 """
 
-import pytest
 from backend.api.middleware.sanitizer import PIISanitizer
 
 def test_sanitize_email():

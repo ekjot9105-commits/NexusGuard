@@ -1,6 +1,6 @@
 # Security & Privacy Architecture
 
-AegisFlow is designed with zero-trust principles and robust AI safeguards suitable for enterprise environments and massive public events like the FIFA World Cup.
+NexusGuard is designed with zero-trust principles and robust AI safeguards suitable for enterprise environments and massive public events like the FIFA World Cup.
 
 ## Threat Model & AI Safety
 

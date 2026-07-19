@@ -1,6 +1,6 @@
 # Architecture Overview
 
-AegisFlow features a decoupled, scalable architecture separating the high-performance React frontend from the intelligent Python FastAPI backend.
+NexusGuard features a decoupled, scalable architecture separating the high-performance React frontend from the intelligent Python FastAPI backend.
 
 ## Overall System Architecture
 
@@ -28,7 +28,7 @@ graph TD
 7. **Multilingual Alerts**: PA announcements are dynamically generated and translated for different crowd segments.
 
 ## Semantic Caching
-To ensure sub-second response times and reduced LLM operational costs, AegisFlow utilizes a **Semantic Cache**. 
+To ensure sub-second response times and reduced LLM operational costs, NexusGuard utilizes a **Semantic Cache**. 
 When a request is made, the backend computes the semantic embedding of the query and checks the cache for similar historical inquiries. If similarity > 95%, it serves the cached response instantly, bypassing the LLM entirely.
 
 The application follows a modern, decoupled architecture designed for high throughput, real-time updates, and AI-driven predictive operational intelligence.

@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('AegisFlow Core Journey', () => {
+test.describe('NexusGuard Core Journey', () => {
   test('User navigates from landing to dashboard and triggers AI Copilot', async ({ page }) => {
     // 1. Landing Page
     await page.goto('/');
-    await expect(page).toHaveTitle(/AegisFlow/);
+    await expect(page).toHaveTitle(/NexusGuard/);
     
     // Find and click the dashboard link/button
     const enterDashboard = page.getByRole('link', { name: /Dashboard/i });

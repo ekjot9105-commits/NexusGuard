@@ -1,5 +1,5 @@
 """
-Global exception handlers for AegisFlow API.
+Global exception handlers for NexusGuard API.
 """
 
 import logging

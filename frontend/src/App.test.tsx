@@ -5,6 +5,6 @@ import App from './App';
 describe('App', () => {
   it('renders landing page by default', () => {
     render(<App />);
-    expect(screen.getAllByText(/AegisFlow/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/NexusGuard/i).length).toBeGreaterThan(0);
   });
 });

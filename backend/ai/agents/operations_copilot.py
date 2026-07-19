@@ -1,5 +1,5 @@
 """
-Operations Copilot Agent for AegisFlow.
+Operations Copilot Agent for NexusGuard.
 
 This agent acts as the 'Brain' of the system. It receives risk reports and telemetry,
 constructs a comprehensive operational context, and queries the AI Core to generate

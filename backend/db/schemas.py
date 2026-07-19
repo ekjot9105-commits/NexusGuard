@@ -1,5 +1,5 @@
 """
-Pydantic schemas for AegisFlow API and AI data validation.
+Pydantic schemas for NexusGuard API and AI data validation.
 
 This module contains the core data structures used for API requests,
 responses, and structured AI outputs. It enforces type safety and

@@ -39,7 +39,7 @@ export default function GlobalHeader() {
             </div>
             <div>
               <div className="text-[9px] text-primary uppercase tracking-[0.2em] font-bold leading-none mb-0.5">FIFA World Cup 2026</div>
-              <h1 className="text-xl font-extrabold tracking-widest bg-gradient-to-r from-textPrimary via-primary to-info bg-clip-text text-transparent leading-none">AegisFlow</h1>
+              <h1 className="text-xl font-extrabold tracking-widest bg-gradient-to-r from-textPrimary via-primary to-info bg-clip-text text-transparent leading-none">NexusGuard</h1>
             </div>
           </NavLink>
 

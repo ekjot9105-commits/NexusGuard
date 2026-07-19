@@ -1,5 +1,5 @@
 """
-Main FastAPI Application Entry Point for AegisFlow.
+Main FastAPI Application Entry Point for NexusGuard.
 
 This module initializes the FastAPI app, configures global middleware
 (such as the PII Sanitizer and CORS), and registers structured exception handlers
@@ -24,7 +24,6 @@ from backend.api.middleware.sanitizer import PIISanitizerMiddleware
 from backend.db.schemas import APIResponse
 from backend.api.routers import copilot, dashboard, chat
 import jwt
-import os
 from backend.config import settings
 
 # Configure slowapi for rate limiting
@@ -92,7 +91,7 @@ class MockAuthMiddleware(BaseHTTPMiddleware):
 def create_app() -> FastAPI:
     """Factory function to create and configure the FastAPI application."""
     app = FastAPI(
-        title="AegisFlow API",
+        title="NexusGuard API",
         description="AI Stadium Operations Copilot for FIFA World Cup 2026",
         version="1.0.0",
         docs_url="/docs",

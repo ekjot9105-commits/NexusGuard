@@ -77,7 +77,7 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-lg sm:text-xl text-textSecondary mb-10 max-w-2xl mx-auto leading-relaxed">
-            AegisFlow is a GenAI-powered Operations Copilot designed to preemptively manage crowds, coordinate volunteers, and provide seamless multilingual support across all 16 host venues.
+            NexusGuard is a GenAI-powered Operations Copilot designed to preemptively manage crowds, coordinate volunteers, and provide seamless multilingual support across all 16 host venues.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -88,7 +88,7 @@ export default function LandingPage() {
               Enter Live Operations <ArrowRight size={18} />
             </button>
             <a 
-              href="https://github.com/ekjot9105-commits/AegisFlow"
+              href="https://github.com/ekjot9105-commits/NexusGuard"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-surfaceHighlight text-textPrimary font-bold rounded-lg border border-borderWhite/20 hover:bg-borderWhite/10 transition-all w-full sm:w-auto justify-center flex items-center gap-2"
@@ -136,7 +136,7 @@ export default function LandingPage() {
       <section className="relative w-full px-4 sm:px-6 lg:px-8 py-24 bg-bg-base">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-textPrimary mb-4">How AegisFlow Works</h2>
+            <h2 className="text-3xl font-bold text-textPrimary mb-4">How NexusGuard Works</h2>
             <p className="text-textSecondary max-w-xl mx-auto">An end-to-end operational intelligence loop powered by Generative AI.</p>
           </div>
           
@@ -178,7 +178,7 @@ export default function LandingPage() {
               <div>
                 <h2 className="text-3xl font-bold text-textPrimary mb-4">Powered by Advanced GenAI</h2>
                 <p className="text-textSecondary leading-relaxed text-lg">
-                  Traditional dashboards only show you what happened. AegisFlow's Copilot tells you what will happen, explains why, and provides a one-click execution strategy to mitigate it.
+                  Traditional dashboards only show you what happened. NexusGuard's Copilot tells you what will happen, explains why, and provides a one-click execution strategy to mitigate it.
                 </p>
               </div>
               

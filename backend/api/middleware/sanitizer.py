@@ -1,5 +1,5 @@
 """
-PII Sanitizer Middleware for AegisFlow.
+PII Sanitizer Middleware for NexusGuard.
 
 Intercepts incoming requests and masks Personally Identifiable Information (PII)
 such as emails, phone numbers, ticket IDs, and basic names to ensure no sensitive

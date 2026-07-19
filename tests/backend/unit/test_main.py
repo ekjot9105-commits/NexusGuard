@@ -2,7 +2,6 @@
 Unit tests for the FastAPI application entry point.
 """
 
-import pytest
 from fastapi.testclient import TestClient
 from backend.main import app
 

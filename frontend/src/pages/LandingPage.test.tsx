@@ -10,6 +10,6 @@ describe('LandingPage', () => {
         <LandingPage />
       </BrowserRouter>
     );
-    expect(screen.getAllByText(/AegisFlow/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/NexusGuard/i).length).toBeGreaterThan(0);
   });
 });

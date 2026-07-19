@@ -1,6 +1,6 @@
 # API Documentation
 
-AegisFlow uses a RESTful API built on FastAPI. Below is an overview of the core endpoints.
+NexusGuard uses a RESTful API built on FastAPI. Below is an overview of the core endpoints.
 
 ## Base URL
 `/api/v1`

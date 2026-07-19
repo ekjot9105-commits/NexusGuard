@@ -1,6 +1,6 @@
-# Contributing to AegisFlow
+# Contributing to NexusGuard
 
-We welcome contributions to AegisFlow! Please follow these guidelines to help us maintain a high-quality codebase.
+We welcome contributions to NexusGuard! Please follow these guidelines to help us maintain a high-quality codebase.
 
 ## Repository Structure
 - `/frontend`: React application built with Vite and Tailwind CSS.

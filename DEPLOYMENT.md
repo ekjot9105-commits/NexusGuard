@@ -1,6 +1,6 @@
 # Deployment Guide
 
-AegisFlow is configured for scalable deployment using Netlify for the frontend and Render for the FastAPI backend.
+NexusGuard is configured for scalable deployment using Netlify for the frontend and Render for the FastAPI backend.
 
 ## Environment Variables
 
